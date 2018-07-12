@@ -2,14 +2,14 @@
 
 namespace app\controllers;
 
-use Yii;
-use yii\filters\AccessControl;
-use yii\web\Controller;
-use yii\web\Response;
-use yii\filters\VerbFilter;
-use app\models\LoginForm;
 use app\models\ContactForm;
 use app\models\EntryForm;
+use app\models\LoginForm;
+use Yii;
+use yii\filters\AccessControl;
+use yii\filters\VerbFilter;
+use yii\web\Controller;
+use yii\web\Response;
 
 class SiteController extends Controller
 {
@@ -146,5 +146,78 @@ class SiteController extends Controller
             // 无论是初始化显示还是数据验证错误
             return $this->render('entry', ['model' => $model]);
         }    
+    }
+    
+    public function actionRedis()
+    {
+        /*
+        $redisKey = 'tc-user-info-10831802';       
+        //Yii::$app->redis->set($redisKey,'111');  //设置redis缓存
+        $redisRes = Yii::$app->redis->get($redisKey);   //读取redis缓存
+        //var_export($redisRes);
+        if(''==$redisRes||\is_null($redisRes)){
+            echo "empty redis\n";
+        }
+        //print_r($redisRes);echo "\n";
+        $redisRes = \json_decode($redisRes,true);
+        //print_r($redisRes);
+        $nickname= isset($redisRes['nickname'])?$redisRes['nickname']:'unknown';
+        
+        
+        $userInviteRes = Yii::$app->redis->get('tc-user-invite-template-list');   //读取redis缓存
+        if(''==$userInviteRes||\is_null($userInviteRes)){
+            echo "empty userInviteRes\n";
+        }
+        var_export($userInviteRes);
+        */
+        
+        $nickname='cart';
+        
+        //$oRes = $this->setcart();
+        $oRes = $this->getcart();
+        print_r($oRes);
+        
+        
+        return $this->render('redis', ['message' => $nickname]);
+    }
+    
+    private function setcart(){
+        $_REQUEST['uid']=10808;
+        $_REQUEST['cart']=\time();
+//         $_REQUEST['cart']=[
+//             ['id'=>101,'price'=>10.20,'num'=>6],
+//             ['id'=>108,'price'=>15.02,'num'=>2],
+//         ];
+        if (isset($_REQUEST['uid'])&&isset($_REQUEST['cart'])) {
+            $uid = $_REQUEST['uid'];
+            $cart = $_REQUEST['cart'];
+            //Redis保存购物车数据：30分钟
+            $redis = Yii::$app->redis;
+            $redis->set('cart:'.$uid, $cart);
+            $redis->expire('cart:'.$uid, 30*60);
+            $result['error'] = 0;
+            $result['msg'] = '保存成功';
+        } else {
+            $result['error'] = 1;
+            $result['msg'] = '参数错误';
+        }
+        return $result;
+    }
+    
+    private function getcart(){
+        $_REQUEST['uid']=10808;
+        if (isset($_REQUEST['uid'])) {
+            $uid = $_REQUEST['uid'];
+            //Redis保存购物车数据：30分钟
+            $redis = Yii::$app->redis;
+            $cart = $redis->get('cart:'.$uid);
+            $result['error'] = 0;
+            $result['msg'] = '获取成功';
+            $result['cart'] = $cart ? $cart : '';
+        } else {
+            $result['error'] = 1;
+            $result['msg'] = '参数错误';
+        }
+        return $result;
     }
 }

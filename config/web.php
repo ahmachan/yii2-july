@@ -51,8 +51,16 @@ $config = [
             ],
         ],
         */
+        'redis' =>[
+            'class' => 'yii\redis\Connection',
+            'hostname' => 'redis',  //你的redis地址
+            //'password' => "timecard!@#abcd",
+            'port' => 6379, //端口
+            'database' => 0,
+        ],
     ],
     'params' => $params,
+
 ];
 
 if (YII_ENV_DEV) {
@@ -69,6 +77,13 @@ if (YII_ENV_DEV) {
         'class' => 'yii\gii\Module',
         // uncomment the following to add your IP if you are not connecting from localhost.
         //'allowedIPs' => ['127.0.0.1', '::1'],
+    ];
+    $config['components']['redis']=[
+        'class' => 'yii\redis\Connection',
+        'hostname' => 'redis',  //你的redis地址
+        //'password' => "",
+        'port' => 6379, //端口
+        'database' => 0,
     ];
 }
 
