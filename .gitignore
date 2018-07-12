@@ -237,8 +237,8 @@ crashlytics-build.properties
 fabric.properties
 
 # php composer
-#composer.lock
-#vendor/
+composer.lock
+vendor/
 
 
 # Mac .Ds_store
